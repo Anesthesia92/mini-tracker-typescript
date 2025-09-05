@@ -1,0 +1,102 @@
+<p-card>
+  <p-toast />
+  <h2 class="text-purple-800">Добавляйте задачи в таблицу</h2>
+
+  <p-toolbar>
+    <ng-template #start>
+      <p-button label="Добавить" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+    </ng-template>
+  </p-toolbar>
+
+  <p-table
+    #dt
+    [value]="tasks()"
+    [(selection)]="selectedTasks"
+    [rows]="10"
+    [paginator]="true"
+    [globalFilterFields]="['title']"
+    [tableStyle]="{ 'min-width': '75rem' }"
+    [rowHover]="true"
+    dataKey="id"
+    [loading]="loading()"
+    currentPageReportTemplate="Показаны {first} to {last} из {totalRecords} элементов"
+    [showCurrentPageReport]="true"
+  >
+    <ng-template #header>
+      <tr>
+        <th style="width: 3rem"></th>
+
+        <th pSortableColumn="id" style="min-width: 6rem">
+          ID
+        </th>
+
+        <th pSortableColumn="title" style="min-width: 16rem">
+          <div class="flex items-center gap-2">
+            Название
+            <p-sortIcon field="title" />
+          </div>
+        </th>
+        <th pSortableColumn="status" style="min-width: 12rem">
+           Статус
+        </th>
+
+        <th style="min-width: 5rem"></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-task>
+      <tr>
+        <td style="width: 3rem">
+          <p-tableCheckbox
+            [value]="task"
+            [inputId]="task.id"
+            name="task.name"
+            (change)="toggleCompleted(task)"
+            [disabled]="loading()">
+          </p-tableCheckbox>
+        </td>
+
+        <td style="min-width: 12rem">{{ task.id }}</td>
+        <td style="min-width: 16rem">{{ task.title }}</td>
+        <td>
+          <p-tag [value]="task.completed ? 'Завершена' : 'Не завершена'" [severity]="getSeverity(task.completed)" />
+        </td>
+        <td>
+          <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
+                    [disabled]="loading()"
+                    (click)="delete(task)" />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-dialog
+    [(visible)]="taskDialog"
+    (onHide)="hideDialog()"
+    [style]="dialogSize"
+    header="Добавление задачи"
+    [modal]="true"
+    [closeOnEscape]="true"
+    [dismissableMask]="true"
+    resizable="false"
+  >
+    <ng-template #content>
+        <div>
+          <label for="title" class="block font-bold mb-3">Имя</label>
+          <input type="text" pInputText id="title" [(ngModel)]="task.title" required autofocus fluid class="w-full" />
+
+          @if (submitted && !task.title) {
+            <small class="text-red-500">Обязательное поле</small>
+          }
+        </div>
+    </ng-template>
+
+    <ng-template #footer>
+      <p-button label="Отменить" icon="pi pi-times" text (click)="hideDialog()" [disabled]="loading()" />
+      <p-button label="Сохранить" icon="pi pi-check" (click)="save()" [disabled]="loading()" />
+    </ng-template>
+  </p-dialog>
+
+  <p-confirmDialog [style]="dialogSize" />
+</p-card>
+
