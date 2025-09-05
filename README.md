@@ -8,6 +8,7 @@ To start a local development server, run:
 back: 
 ```bash
 npm run dev
+```
 
 angular:
 ```bash
